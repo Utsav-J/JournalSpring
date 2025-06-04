@@ -29,4 +29,6 @@ public class JournalEntryService {
     public void deleteEntryById(ObjectId id){
         journalEntryRepo.deleteById(id);
     }
+
+
 }
