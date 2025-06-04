@@ -31,7 +31,11 @@ public class UserService {
         return userRepo.findById(id);
     }
 
-    public void deleteUser(ObjectId id){
+    public void deleteUserById(ObjectId id){
         userRepo.deleteById(id);
+    }
+
+    public void deleteUserByUsername(String username){
+        userRepo.deleteByUsername(username);
     }
 }
