@@ -4,6 +4,7 @@ import com.utsavj.journalApp.entity.User;
 import com.utsavj.journalApp.repository.JournalEntryRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.embedded.TomcatVirtualThreadsWebServerFactoryCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,12 +43,26 @@ public class JournalEntryService {
         return journalEntryRepo.findById(id);
     }
 
-    public void deleteEntryById(String username, ObjectId id){
-        User user = userService.getUserByUsername(username);
-        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
-        userService.saveUser(user);
-        journalEntryRepo.deleteById(id);
+    @Transactional
+    public boolean deleteEntryById(String username, ObjectId id){
+        boolean hasRemoved = false;
+        try {
+            User user = userService.getUserByUsername(username);
+            hasRemoved = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+            if(hasRemoved){
+                userService.saveUser(user);
+                journalEntryRepo.deleteById(id);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            throw new RuntimeException("There was an error during deletion: "+e);
+        }
+        return hasRemoved;
     }
+
+//    public List<JournalEntry> getListByUsername(String username){
+//        return
+//    }
 
 
 }
